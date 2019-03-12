@@ -5,7 +5,7 @@ import re
 
 
 def decrypt(valor):
-    pattern = re.compile(r'((\\|/|>|<)?\d{3}|.)')
+    pattern = re.compile(r'([\\/><]?[0-9a-zA-Z]{3}|.)')
     resultado = ''
     for trecho in pattern.finditer(valor):
         resultado = resultado + find_value(trecho.group(0))
