@@ -1,14 +1,20 @@
+from aula2_criptografia.dicionario import dic
 import random
-from dicionario import dic
 import unicodedata
+import re
 
 
 def decrypt(valor):
-    pass
+    pattern = re.compile(r'((\\|/|>|<)?\d{3}|.)')
+    resultado = ''
+    for trecho in pattern.finditer(valor):
+        resultado = resultado + find_value(trecho.group(0))
+
+    return resultado
 
 
 def encrypt(valor):
-    valor_sem_acentos = str(unicodedata.normalize('NFKD', valor).encode('ASCII', 'ignore'))
+    valor_sem_acentos = str(unicodedata.normalize('NFKD', valor).encode('ASCII', 'ignore'), 'ASCII')
     r = []
     for c in valor_sem_acentos:
         code = find_code(c)
@@ -41,9 +47,25 @@ def find_value(valor):
         if set(valor) == s:
             return value
 
+    return valor
 
-print(encrypt('''Hoje em dia, os computadores estão presentes em nossa vida de uma forma nunca vista anteriormente. Sejam em casa, na escola, na faculdade, na empresa ou em qualquer outro lugar, eles estão sempre entre nós. Ao contrário do que parece, a computação não surgiu nos últimos anos ou décadas, mas sim há mais de 7 mil anos.
 
-Muitos povos da antiguidade utilizavam o ábaco para a realização de cálculos do dia a dia, principalmente nas áreas de comércio de mercadorias e desenvolvimento de construções civis. Ele pode ser considerado como a primeira máquina desenvolvida para cálculo, pois utilizava um sistema bastante simples, mas também muito eficiente na resolução de problemas matemáticos. É basicamente um conjunto de varetas de forma paralela que contém pequenas bolas que realizam a contagem.
+if __name__ == '__main__':
+    import sys
+    import argparse
 
-Seu primeiro registro é datado do ano de 5.500 a.C., pelos povos que constituíam a Mesopotâmia. Contudo, o ábaco também foi usado posteriormente por muitas outras culturas: Babilônia, Egito, Grécia, Roma, Índia, China, Japão etc. Cada um desses povos possui uma versão de específica dessa máquina, entretanto, preservando a sua essência original. Seu nome na Roma Antiga era "Calculus", termo de onde a palavra cálculo foi derivada.'''))
+    argparser = argparse.ArgumentParser(description='Criptografa e descriptografa o texto do arquivo informado')
+    argparser.add_argument('arquivo', type=str, help='Nome ou caminho do arquivo a ser criptografado ou '
+                                                     'descriptografado')
+    argparser.add_argument('--acao', dest='acao', default='c')
+
+    parsed_args = argparser.parse_args()
+
+    with open(sys.argv[1], encoding='UTF-8') as arquivo:
+        for linha in arquivo:
+            if parsed_args.acao == 'c':
+                criptografado = encrypt(linha)
+                print(criptografado)
+            else:
+                descriptografado = decrypt(linha)
+                print(descriptografado)
